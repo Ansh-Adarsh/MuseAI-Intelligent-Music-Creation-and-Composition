@@ -9,7 +9,7 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'subtle';
 type Size = 'sm' | 'md' | 'lg';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-accent text-white font-semibold shadow-sm hover:bg-accent-strong disabled:bg-studio-600 disabled:text-studio-300 disabled:shadow-none',
+  primary: 'text-white font-semibold shadow-sm disabled:opacity-60 disabled:shadow-none disabled:cursor-not-allowed',
   secondary: 'bg-studio-900 text-studio-100 border border-ink/[0.12] hover:bg-studio-850',
   subtle: 'bg-studio-850 text-studio-200 border border-ink/[0.08] hover:bg-studio-700 hover:text-studio-100',
   ghost: 'text-studio-300 hover:text-studio-100 hover:bg-ink/[0.05]',
@@ -36,6 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       className={cx('inline-flex select-none items-center justify-center whitespace-nowrap transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-60', VARIANTS[variant], SIZES[size], className)}
       disabled={disabled || loading}
+      style={variant === 'primary' && !(disabled || loading) ? { background: 'linear-gradient(135deg, #5b4de0 0%, #7c4ddb 50%, #3b7ddd 100%)' } : undefined}
       {...rest}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
@@ -63,7 +64,7 @@ export function Panel({ title, icon, actions, children, className, subtitle }: {
       {(title || actions) && (
         <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            {icon && <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">{icon}</div>}
+            {icon && <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white" style={{ background: 'linear-gradient(135deg, #5b4de0 0%, #3b7ddd 100%)' }}>{icon}</div>}
             <div>
               {title && <h2 className="text-[15px] font-semibold text-studio-100">{title}</h2>}
               {subtitle && <p className="mt-0.5 text-xs text-studio-300">{subtitle}</p>}
@@ -121,8 +122,8 @@ export function ProgressBar({ value, className, indeterminate }: { value: number
   return (
     <div className={cx('h-1.5 w-full overflow-hidden rounded-full bg-studio-700', className)} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
       <div
-        className={cx('h-full rounded-full bg-gradient-to-r from-accent to-signal-cyan transition-[width] duration-300', indeterminate && 'animate-pulse')}
-        style={{ width: `${Math.max(indeterminate ? 30 : 2, Math.min(100, value * 100))}%` }}
+        className={cx('h-full rounded-full transition-[width] duration-300', indeterminate && 'animate-pulse')}
+        style={{ width: `${Math.max(indeterminate ? 30 : 2, Math.min(100, value * 100))}%`, background: 'linear-gradient(90deg, #5b4de0 0%, #7c4ddb 50%, #3b7ddd 100%)' }}
       />
     </div>
   );

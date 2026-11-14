@@ -25,7 +25,7 @@ export function CreateMusicWorkspace({ gen, onEditSong }: { gen: MusicGeneration
       </div>
 
       <div className="min-w-0 space-y-6 xl:sticky xl:top-24 xl:self-start">
-        <section className="panel p-5 sm:p-6">
+        <section className="panel p-5 sm:p-6 overflow-hidden" style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%)' }}>
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -58,7 +58,7 @@ export function CreateMusicWorkspace({ gen, onEditSong }: { gen: MusicGeneration
           <GenerationResult result={state.data} onEdit={onEditSong} />
         ) : (
           <section className="panel flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink/[0.04] text-studio-400"><Music className="h-6 w-6" /></div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl text-white" style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%)' }}><Music className="h-6 w-6" /></div>
             <div className="text-sm font-medium text-studio-200">No music generated yet</div>
             <p className="max-w-xs text-xs text-studio-400">Write lyrics (optional), describe the style, then press Generate Music. Your result appears here, ready to send to the editor.</p>
           </section>

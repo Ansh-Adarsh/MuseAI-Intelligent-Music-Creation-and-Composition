@@ -1,11 +1,11 @@
 /**
- * What ACE-Step 1.5 actually supports, according to its docs
- * (huggingface.co/ACE-Step/Ace-Step1.5, github.com/ace-step/ACE-Step-1.5
- * docs/en/INFERENCE.md, docs/en/API.md, acestep/constants.py).
- *
- * The UI uses this to label every control as either an ACE-Step parameter or
- * MuseAI-only metadata, and to enforce documented limits.
- */
+* What ACE-Step 1.5 actually supports, according to its docs
+* (huggingface.co/ACE-Step/Ace-Step1.5, github.com/ace-step/ACE-Step-1.5
+* docs/en/INFERENCE.md, docs/en/API.md, acestep/constants.py).
+*
+* The UI uses this to label every control as either an ACE-Step parameter or
+* MuseAI-only metadata, and to enforce documented limits.
+*/
 
 import type { AceStepDitModel, AceStepTrackName, EditMode } from '@/types/music';
 
@@ -106,19 +106,19 @@ export const EDIT_MODES: {
   usesRanges: boolean;
   description: string;
 }[] = [
-  { id: 'auto', label: 'Smart', baseOnly: false, usesRanges: true,
-    description: 'Picks the best approach from your description.' },
-  { id: 'repaint', label: 'Rework a section', aceTaskType: 'repaint', baseOnly: false, usesRanges: true,
-    description: 'Recreates the selected time ranges to match your description. Everything else stays the same.' },
-  { id: 'cover', label: 'Restyle whole song', aceTaskType: 'cover', baseOnly: false, usesRanges: false,
-    description: 'Gives the entire song a new style while keeping its structure.' },
-  { id: 'lego', label: 'Add an instrument', aceTaskType: 'lego', baseOnly: true, usesRanges: true,
-    description: 'Adds a new instrument part on top of the existing mix.' },
-  { id: 'extract', label: 'Isolate an instrument', aceTaskType: 'extract', baseOnly: true, usesRanges: false,
-    description: 'Pulls a single part, such as the vocals, out of the mix.' },
-  { id: 'complete', label: 'Fill out arrangement', aceTaskType: 'complete', baseOnly: true, usesRanges: false,
-    description: 'Adds accompanying instruments to a sparse track.' },
-];
+    {
+      id: 'auto', label: 'Smart', baseOnly: false, usesRanges: true,
+      description: 'Picks the best approach from your description.'
+    },
+    {
+      id: 'repaint', label: 'Rework a section', aceTaskType: 'repaint', baseOnly: false, usesRanges: true,
+      description: 'Recreates the selected time ranges to match your description. Everything else stays the same.'
+    },
+    {
+      id: 'lego', label: 'Add an instrument', aceTaskType: 'lego', baseOnly: true, usesRanges: true,
+      description: 'Adds a new instrument part on top of the existing mix.'
+    },
+  ];
 
 /** Create Music control labels. */
 export const CREATE_CONTROLS: Record<string, ControlSupport> = {

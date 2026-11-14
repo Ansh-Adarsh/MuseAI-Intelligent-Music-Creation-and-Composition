@@ -41,11 +41,12 @@ export function EditStrategy({ editing }: { editing: MusicEditingApi }) {
           {EDIT_MODES.map((m) => (
             <button key={m.id} type="button" onClick={() => chooseMode(m.id)} aria-pressed={settings.editMode === m.id}
               className={cx('rounded-xl border px-3 py-2.5 text-left transition-colors',
-                settings.editMode === m.id ? 'border-accent/60 bg-accent/[0.06] ring-1 ring-accent/30' : 'border-ink/[0.08] bg-studio-900 hover:border-ink/[0.16]')}>
-              <span className={cx('flex items-center gap-1.5 text-sm font-medium', settings.editMode === m.id ? 'text-accent' : 'text-studio-100')}>
+                settings.editMode === m.id ? 'border-accent/30 text-white shadow-sm' : 'border-ink/[0.08] bg-white/60 hover:border-purple-200 hover:bg-purple-50/50')}
+              style={settings.editMode === m.id ? { background: 'linear-gradient(135deg, #5b4de0 0%, #7c4ddb 50%, #3b7ddd 100%)' } : {}}>
+              <span className={cx('flex items-center gap-1.5 text-sm font-medium', settings.editMode === m.id ? 'text-white' : 'text-studio-100')}>
                 {m.id === 'auto' && <Sparkles className="h-3.5 w-3.5" />}{m.label}
               </span>
-              <p className="mt-1 text-[11px] leading-snug text-studio-400">{m.description}</p>
+              <p className={cx('mt-1 text-[11px] leading-snug', settings.editMode === m.id ? 'text-white/70' : 'text-studio-400')}>{m.description}</p>
             </button>
           ))}
         </div>
@@ -66,7 +67,8 @@ export function EditStrategy({ editing }: { editing: MusicEditingApi }) {
               return (
                 <button key={t} type="button" onClick={() => toggleTrack(t)} aria-pressed={on}
                   className={cx('rounded-lg border px-2.5 py-1 text-xs transition-colors',
-                    on ? 'border-signal-cyan/50 bg-signal-cyan/10 text-signal-cyan' : 'border-ink/[0.08] bg-studio-900 text-studio-300 hover:text-studio-100')}>
+                    on ? 'border-transparent text-white' : 'border-ink/[0.08] bg-white/60 text-studio-300 hover:text-studio-100 hover:border-purple-200')}
+                  style={on ? { background: 'linear-gradient(135deg, #5b4de0 0%, #3b7ddd 100%)' } : {}}>
                   {TRACK_LABELS[t]}
                 </button>
               );

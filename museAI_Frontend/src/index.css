@@ -6,26 +6,28 @@
   :root { color-scheme: light; }
   html, body, #root { height: 100%; }
   body {
-    @apply bg-studio-950 text-studio-100 font-sans antialiased;
+    @apply text-studio-100 font-sans antialiased;
+    background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 40%, #fff0f9 70%, #f0f9ff 100%);
+    background-attachment: fixed;
   }
-  ::selection { background: rgba(91, 77, 224, 0.18); }
-  *:focus-visible { @apply outline-none ring-2 ring-accent/50 ring-offset-2 ring-offset-studio-950; }
+  ::selection { background: rgba(91, 77, 224, 0.22); }
+  *:focus-visible { @apply outline-none ring-2 ring-accent/50 ring-offset-2; ring-offset-color: transparent; }
 }
 
 @layer components {
   .panel {
-    @apply rounded-2xl border border-ink/[0.08] bg-studio-900 shadow-panel;
+    @apply rounded-2xl border border-ink/[0.07] bg-white/80 shadow-panel backdrop-blur-sm;
   }
   .panel-inset {
-    @apply rounded-xl border border-ink/[0.07] bg-studio-850/70;
+    @apply rounded-xl border border-ink/[0.06] bg-white/60;
   }
   .label {
     @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-studio-300;
   }
   .input {
-    @apply w-full rounded-lg border border-ink/[0.12] bg-studio-900 px-3 py-2 text-sm text-studio-100
+    @apply w-full rounded-lg border border-ink/[0.12] bg-white/70 px-3 py-2 text-sm text-studio-100
       placeholder:text-studio-400 transition-colors
-      hover:border-ink/[0.2] focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/15 disabled:bg-studio-850 disabled:text-studio-400;
+      hover:border-accent/30 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/15 disabled:bg-studio-850 disabled:text-studio-400;
   }
   .input-error { @apply border-signal-rose/60 hover:border-signal-rose/70 focus:border-signal-rose; }
   .mono { @apply font-mono tabular-nums; }
