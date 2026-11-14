@@ -103,7 +103,7 @@ export function EditMusicWorkspace({ upload, editing }: { upload: AudioUploadApi
             </Panel>
           </div>
 
-          <section className="panel p-5 sm:p-6">
+          <section className="panel p-5 sm:p-6 overflow-hidden" style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%)' }}>
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <div>

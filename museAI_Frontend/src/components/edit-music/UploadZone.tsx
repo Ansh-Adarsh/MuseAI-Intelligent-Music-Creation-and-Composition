@@ -42,7 +42,7 @@ export function UploadZone({ state, audio, warnings, onFile, onRemove }: Props) 
       <div className="space-y-3">
         {picker}
         <div className="panel-inset flex flex-wrap items-center gap-4 p-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent"><FileAudio className="h-5 w-5" /></div>
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl text-white" style={{ background: 'linear-gradient(135deg, #5b4de0 0%, #3b7ddd 100%)' }}><FileAudio className="h-5 w-5" /></div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="truncate text-sm font-medium" title={audio.name}>{audio.name}</span>
@@ -85,10 +85,10 @@ export function UploadZone({ state, audio, warnings, onFile, onRemove }: Props) 
         aria-label="Upload audio file"
         className={cx(
           'group relative flex cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors',
-          over ? 'border-accent/70 bg-accent/[0.06]' : 'border-ink/[0.1] bg-studio-850/50 hover:border-ink/[0.2] hover:bg-ink/[0.02]',
+          over ? 'border-accent/70 bg-accent/[0.06]' : 'border-purple-200/70 hover:border-accent/40 hover:bg-purple-50/50',
         )}
       >
-        <div className={cx('flex h-14 w-14 items-center justify-center rounded-2xl transition-colors', over ? 'bg-accent text-white' : 'bg-accent/10 text-accent group-hover:bg-accent/15')}>
+        <div className={cx('flex h-14 w-14 items-center justify-center rounded-2xl text-white transition-colors', over ? 'opacity-90' : '')} style={{ background: 'linear-gradient(135deg, #5b4de0 0%, #3b7ddd 100%)' }}>
           <UploadCloud className="h-7 w-7" />
         </div>
         <div>
