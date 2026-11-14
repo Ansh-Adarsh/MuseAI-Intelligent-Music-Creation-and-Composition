@@ -1,6 +1,6 @@
-# MuseAI: frontend prototype
+# MuseAI frontend
 
-This is a React, TypeScript and Tailwind frontend for creating and editing music. It is designed to run on **ACE-Step 1.5** through a FastAPI backend that has not been written yet. For now the whole app runs in the browser on **mock services**, so neither ACE-Step nor a backend needs to be installed.
+This is a React, TypeScript and Tailwind frontend for creating and editing music. It connects to the MuseAI FastAPI backend, which provides the ACE-Step 1.5 generation, analysis and editing workflows.
 
 > Whenever this README says ACE-Step supports something, the claim comes from ACE-Step's own documents: the model card at https://huggingface.co/ACE-Step/Ace-Step1.5 and, in https://github.com/ace-step/ACE-Step-1.5, the files `docs/en/INFERENCE.md`, `docs/en/API.md` and `acestep/constants.py`.
 
@@ -21,7 +21,7 @@ To configure it, copy `.env.example` to `.env.local`:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `VITE_SERVICE_MODE` | `mock` | `mock` runs everything in the browser. `http` calls the FastAPI backend. |
+| `VITE_SERVICE_MODE` | `http` | Selects the HTTP service implementation used by the frontend. |
 | `VITE_API_BASE_URL` | `http://localhost:8000` | The MuseAI backend. |
 | `VITE_POLL_INTERVAL_MS` | `1500` | How often to poll a task's status. |
 | `VITE_MAX_UPLOAD_MB` | `50` | Size limit for uploads, checked in the browser. |
@@ -33,7 +33,7 @@ To configure it, copy `.env.example` to `.env.local`:
 ```
 src/
   config/
-    env.ts                    env vars + proposed endpoint paths
+    env.ts                    env vars + backend endpoint paths
     aceStepCapabilities.ts    what ACE-Step 1.5 supports: limits, models, task types,
                               track names, keys, time signatures; also the
                               user-facing labels for edit options
@@ -42,17 +42,11 @@ src/
     music.ts                  every backend contract (see §4)
   services/
     types.ts                  service interfaces (contract every implementation meets)
-    musicGenerationService.ts generateMusic(request)   ┐ choose mock or http
-    musicEditingService.ts    editMusic(request)        │ from VITE_SERVICE_MODE.
-    audioAnalysisService.ts   analyzeAudio(audioFile)   ┘ UI code imports only these.
+    musicGenerationService.ts generateMusic(request)   ┐ service facades used by
+    musicEditingService.ts    editMusic(request)        │ the UI components.
+    audioAnalysisService.ts   analyzeAudio(audioFile)   ┘
     audioFiles.ts             backend result → AudioFile (fetches the bytes)
-    mock/                     ◀ ALL MOCK CODE LIVES HERE
-      mockGenerationService.ts  procedural placeholder audio
-      mockAnalysisService.ts    sample BPM/key/time signature values
-      mockEditingService.ts     placeholder DSP inside the ranges
-      mockFileStore.ts          in-memory stand-in for backend file storage
-      synth.ts, mockDelay.ts
-    http/                     ◀ REAL FastAPI CLIENT (already written)
+    http/
       apiClient.ts              fetch wrapper, upload with progress, task polling
       httpServices.ts           generate / analyze / edit against /api/music/*
   hooks/
@@ -77,7 +71,7 @@ src/
 
 Design rules:
 
-- **Components never import from `services/mock` or `services/http`.** They only call the three facade functions.
+- **Components never import service implementations directly.** They only call the three facade functions.
 - `MusicWorkspace` keeps both workspaces mounted and hides whichever one is inactive. Switching modes never resets any work.
 - An edit never changes an existing `AudioFile`. Every edit creates a new `AudioVersion`, and version 0 is always the original.
 - Detected metadata (`TimeRange.detected`) is stored separately from what the user changes (`TimeRange.overrides`). Every value is labelled *Detected*, *Estimated* or *Edited*.
@@ -107,7 +101,7 @@ This mapping is for developers and is **not shown in the UI**. Model internals (
 | Inference steps | `inference_steps` (turbo ≤20, base ≤200) | ✅ model |
 | Guidance scale | `guidance_scale` | ⚠️ Base/SFT only; turbo forces it to 1.0 |
 | Seed / takes | `seed` + `use_random_seed=false`, `batch_size` ≤8 | ✅ model |
-| Output format | `audio_format` | ✅ model (the mock always returns WAV) |
+| Output format | `audio_format` | ✅ model |
 | Title, tags | none | App only |
 
 ### Edit Existing Song
@@ -138,7 +132,7 @@ This mapping is for developers and is **not shown in the UI**. Model internals (
 
 ## 4. Frontend ↔ backend contract
 
-All types are in `src/types/music.ts`. They are MuseAI contracts and are **not** ACE-Step's own schema. The proposed backend endpoints are:
+All types are in `src/types/music.ts`. They are MuseAI contracts and are **not** ACE-Step's own schema. The backend endpoints are:
 
 ```
 POST /api/music/generate        body: MusicGenerationRequest            → TaskAccepted
@@ -174,9 +168,9 @@ To inspect the exact JSON before it is sent, use `editing.previewRequest` from `
 
 ---
 
-## 5. Connecting the real ACE-Step 1.5 backend
+## 5. Backend integration
 
-1. Write a FastAPI app with the five endpoints above. It can wrap ACE-Step in one of two ways:
+1. The FastAPI backend wraps ACE-Step in one of two ways:
    - **In-process:** use `acestep.inference.generate_music(dit_handler, llm_handler, GenerationParams(...), GenerationConfig(...))`, or
    - **Proxy:** call ACE-Step's own server (`python -m acestep.api_server`, port 8001). Submit with `POST /release_task`, poll `POST /query_result`, and download from `GET /v1/audio?path=…`.
 2. Map the requests. `config/aceStepCapabilities.ts` lists every field mapping. In short:
@@ -210,31 +204,4 @@ To inspect the exact JSON before it is sent, use `editing.previewRequest` from `
    With `editMode == "auto"`, the backend has to choose the task type itself. It can port `utils/editModeHeuristic.ts` or use an LLM router.
 3. For analysis, register the upload, then estimate BPM, key and time signature. Use ACE-Step (`convert_src_audio_to_codes` followed by `understand_music`, which gives global values) and/or a DSP library. Return `segments` only if you really analyse sections.
 4. Allow CORS for the frontend's origin.
-5. Set `VITE_SERVICE_MODE=http` and `VITE_API_BASE_URL=…`, then restart `npm run dev`. **No UI code changes.**
-
----
-
-## 6. What is mocked (it does NOT use the model)
-
-| Feature | Mock behaviour |
-|---|---|
-| Music generation | Plays a **procedural synth placeholder** (pads, bass, arpeggio, drums) that follows the BPM, key and time signature you entered. It does not sing the lyrics or follow the style text. It always returns WAV. |
-| BPM / key / time-signature analysis | **Sample values** derived from a hash of the file name. Nothing is measured. For audio the mock generated itself, it echoes back the parameters it used. Confidence scores and 30-second "segments" are made up. |
-| Upload to backend | Files go into an in-memory `Map` (`mockFileStore`). Nothing leaves the browser, and everything is lost on reload. |
-| Editing | Mixes a **synth layer or crude filter** into the selected ranges with crossfades, so A/B compare and history have something to play. The instruction is not interpreted. |
-| Task progress | Simulated queued → running → succeeded timings. |
-| "Auto" edit strategy | A keyword heuristic, not a model feature. |
-
-These parts are real, not mocked:
-
-- File validation
-- Local reading with real progress
-- Duration measured by decoding in the browser
-- The waveform
-- Playback, seeking, downloads and A/B switching
-- Timestamp parsing and validation
-- Range and metadata editing with overrides kept apart from detected values
-- Version history
-- The HTTP client and polling code, which have not been run against a backend yet
-
-**The UI no longer shows that results are mocked.** Following the product-polish pass, all model, backend and mock wording was removed from user-visible text. In mock mode, placeholder audio and sample analysis values therefore look like real results. Check `VITE_SERVICE_MODE` before demoing, and don't present mock output as model output. The mock/real switch and this list stay in the code and in this README.
+5. Set `VITE_SERVICE_MODE=http` and `VITE_API_BASE_URL=…`, then restart `npm run dev`. No UI code changes are required.
